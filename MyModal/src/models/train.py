@@ -27,16 +27,9 @@ def train_crop_model(crop):
 
     df = load_crop_data(f"data/raw/{crop}.csv")
     df = generate_synthetic_price(df, crop)
-    # df = add_lag_features(df)
     df = encode_month(df)
     df = preprocess(df)
 
-    # features = [
-    #     'Rainfall', 'WPI',
-    #     'Month_sin', 'Month_cos',
-    #     'Price_lag_1', 'Price_lag_2',
-    #     'Price_lag_3', 'Price_roll_mean_3'
-    # ]
     features = [
         'Rainfall',
         'WPI',
@@ -44,35 +37,51 @@ def train_crop_model(crop):
         'Month_cos'
     ]
 
-
     X = df[features]
     y = df['Price']
+
     print("Price statistics:")
     print(y.describe())
 
     selected_features, _ = select_features(X, y)
     X = X[selected_features]
+
     joblib.dump(selected_features, f"models/{crop}_features.pkl")
+
     X_seq, y_seq = create_sequences(X, y, SEQ_LEN)
 
     split = int(0.8 * len(X_seq))
     X_train, X_test = X_seq[:split], X_seq[split:]
     y_train, y_test = y_seq[:split], y_seq[split:]
 
-    scaler = MinMaxScaler()
-    X_train = scaler.fit_transform(
+    # 🔥 SCALE X
+    X_scaler = MinMaxScaler()
+    X_train = X_scaler.fit_transform(
         X_train.reshape(-1, X_train.shape[-1])
     ).reshape(X_train.shape)
-    
-    joblib.dump(scaler, f"models/{crop}_scaler.pkl")
-    X_test = scaler.transform(
+
+    X_test = X_scaler.transform(
         X_test.reshape(-1, X_test.shape[-1])
     ).reshape(X_test.shape)
 
+    joblib.dump(X_scaler, f"models/{crop}_scaler.pkl")
+
+    # 🔥 SCALE Y (VERY IMPORTANT)
+    y_scaler = MinMaxScaler()
+    y_train = y_scaler.fit_transform(y_train.reshape(-1, 1))
+    y_test_scaled = y_scaler.transform(y_test.reshape(-1, 1))
+
+    joblib.dump(y_scaler, f"models/{crop}_y_scaler.pkl")
+
+    # 🔥 Train Model
     model = build_lstm((SEQ_LEN, X_train.shape[2]))
     model.fit(X_train, y_train, epochs=50, batch_size=4, verbose=0)
 
-    y_pred = model.predict(X_test).flatten()
+    # 🔥 Predict (scaled)
+    y_pred_scaled = model.predict(X_test)
+
+    # 🔥 Inverse transform for evaluation
+    y_pred = y_scaler.inverse_transform(y_pred_scaled).flatten()
 
     metrics = evaluate(y_test, y_pred)
     print("Metrics:", metrics)

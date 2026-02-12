@@ -1,43 +1,35 @@
 from fastapi import FastAPI, HTTPException
-from tensorflow.keras.models import load_model
-
-from app.schemas import PredictionRequest, PredictionResponse
-from app.utils import prepare_features
-
 import os
+
+from app.utils import predict_crop_price
 
 app = FastAPI(
     title="Crop Price Prediction API",
-    description="RF + LSTM based crop price prediction (Synthetic)",
-    version="1.0"
+    description="LSTM-based crop price prediction system",
+    version="2.0"
 )
 
-MODEL_PATH = "models"
 
-@app.post("/predict", response_model=PredictionResponse)
-def predict_price(request: PredictionRequest):
+@app.get("/predict/{crop}")
+def predict_price(crop: str):
 
-    crop = request.crop.lower()
-    model_file = f"{MODEL_PATH}/{crop}_lstm.h5"
+    crop = crop.lower()
 
-    if not os.path.exists(model_file):
+    try:
+        predicted_price, last_actual_prices = predict_crop_price(crop)
+
+        return {
+            "crop": crop,
+            "unit": "₹ per quintal",
+            "predicted_price": round(predicted_price, 2),
+            "graph_data": {
+                "actual_prices_last_12_months": last_actual_prices,
+                "predicted_next_month": round(predicted_price, 2)
+            }
+        }
+
+    except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Model not found for crop")
 
-    if len(request.rainfall) != 3:
-        raise HTTPException(status_code=400, detail="Exactly 3 months data required")
-
-    model = load_model(model_file)
-
-    X = prepare_features(
-        request.rainfall,
-        request.wpi,
-        request.month,
-        crop
-    )
-
-    prediction = model.predict(X)[0][0]
-
-    return PredictionResponse(
-        crop=crop,
-        predicted_price=round(float(prediction), 2)
-    )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
