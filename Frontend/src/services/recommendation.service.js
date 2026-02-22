@@ -7,7 +7,8 @@ export const recommendationService = {
   },
 
   getAllCrops: async () => {
-    const response = await api.get('/crops');
+    const response = await api.get('/cropsdata');
+    // console.log("Crop Data Response:", response.data);
     return response.data;
   },
 };

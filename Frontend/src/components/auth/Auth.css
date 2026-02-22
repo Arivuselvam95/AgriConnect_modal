@@ -3,14 +3,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+  background: white;
   padding: 20px;
 }
 
 .auth-card {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 40px rgba(0, 0.10, 0.10, 0.35);
   padding: 40px;
   width: 100%;
   max-width: 450px;
@@ -99,12 +99,12 @@
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #2e7d32;
+  border-color: #131c97;
   box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+  background: linear-gradient(135deg, #5554af 0%, #4c74af 100%);
   color: white;
   padding: 14px 20px;
   border: none;
@@ -138,14 +138,14 @@
 }
 
 .auth-link {
-  color: #2e7d32;
+  color: #56378f;
   font-weight: 600;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .auth-link:hover {
-  color: #1b5e20;
+  color: #2f086e;
 }
 
 .error-message {

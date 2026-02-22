@@ -23,6 +23,7 @@ const CropRecommendation = () => {
     Phosphorus: '',
     Potassium: '',
     pH_Value: '',
+    soilType: '',
   });
 
   useEffect(() => {
@@ -54,13 +55,14 @@ const CropRecommendation = () => {
     setResult(null);
 
     try {
+      const { soilType, ...dataToSend } = formData;
       const data = await recommendationService.recommendCrop({
-        ...formData,
+        ...dataToSend,
         district: user?.district || 'Chennai',
-        Nitrogen: parseFloat(formData.Nitrogen),
-        Phosphorus: parseFloat(formData.Phosphorus),
-        Potassium: parseFloat(formData.Potassium),
-        pH_Value: parseFloat(formData.pH_Value),
+        Nitrogen: parseFloat(dataToSend.Nitrogen),
+        Phosphorus: parseFloat(dataToSend.Phosphorus),
+        Potassium: parseFloat(dataToSend.Potassium),
+        pH_Value: parseFloat(dataToSend.pH_Value),
       });
       setResult(data);
     } catch (err) {
@@ -173,6 +175,24 @@ const CropRecommendation = () => {
                       max="14"
                     />
                   </div>
+
+                  <div className="form-group">
+                    <label htmlFor="soilType">Soil Type</label>
+                    <select
+                      id="soilType"
+                      name="soilType"
+                      value={formData.soilType}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Select soil type</option>
+                      <option value="Clay">Clay</option>
+                      <option value="Sandy">Sandy</option>
+                      <option value="Loamy">Loamy</option>
+                      <option value="Silty">Silty</option>
+                      <option value="Peaty">Peaty</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -255,28 +275,28 @@ const CropRecommendation = () => {
                 <div key={index} className="crop-info-card">
                   <div className="crop-info-header">
                     <Leaf size={24} color="#2e7d32" />
-                    <h4>{crop.Crop}</h4>
+                    <h4>{crop.crop}</h4>
                   </div>
                   <div className="crop-info-body">
                     <div className="info-row">
                       <span className="info-label">Nitrogen:</span>
-                      <span className="info-value">{crop.N_min} - {crop.N_max} kg/ha</span>
+                      <span className="info-value">{crop.Nitrogen} kg/ha</span>
                     </div>
                     <div className="info-row">
                       <span className="info-label">Phosphorus:</span>
-                      <span className="info-value">{crop.P_min} - {crop.P_max} kg/ha</span>
+                      <span className="info-value">{crop.Phosphorus} kg/ha</span>
                     </div>
                     <div className="info-row">
                       <span className="info-label">Potassium:</span>
-                      <span className="info-value">{crop.K_min} - {crop.K_max} kg/ha</span>
+                      <span className="info-value">{crop.Potassium} kg/ha</span>
                     </div>
                     <div className="info-row">
-                      <span className="info-label">Temperature:</span>
-                      <span className="info-value">{crop.Temp_min} - {crop.Temp_max}°C</span>
+                      <span className="info-label">pH Range:</span>
+                      <span className="info-value">{crop.pH_min} - {crop.pH_max}</span>
                     </div>
                     <div className="info-row">
-                      <span className="info-label">Rainfall:</span>
-                      <span className="info-value">{crop.Rain_min} - {crop.Rain_max} mm</span>
+                      <span className="info-label">Temperature Range:</span>
+                      <span className="info-value">{crop.temperature_min} - {crop.temperature_max}°C</span>
                     </div>
                   </div>
                 </div>

@@ -35,7 +35,7 @@ app.use("/api/price", priceRoutes);
 app.use("/api/recommendation", recommendationRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/crops", cropDataRoutes);
+app.use("/api/cropsdata", cropDataRoutes);
 
 
 // ===============================
