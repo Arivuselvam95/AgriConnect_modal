@@ -55,21 +55,21 @@
 }
 
 .tab.active {
-  background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+  background: linear-gradient(135deg, #155e63 0%, #0ea5a4 100%);
   color: white;
 }
 
 .tab:hover:not(.active) {
   background: #f5f7fa;
-  color: #2e7d32;
+  color: #155e63;
 }
 
 .success-box {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: #eef2ff;
+  color: #155e63;
   padding: 14px 18px;
   border-radius: 10px;
-  border-left: 4px solid #2e7d32;
+  border-left: 4px solid #155e63;
   margin-bottom: 20px;
   font-size: 14px;
   font-weight: 500;
@@ -95,7 +95,7 @@
 }
 
 .add-product-btn {
-  background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+  background: linear-gradient(135deg, #155e63 0%, #0ea5a4 100%);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -111,7 +111,7 @@
 
 .add-product-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+  box-shadow: 0 6px 20px rgba(21, 94, 99, 0.2);
 }
 
 .products-grid {
@@ -190,7 +190,7 @@
 .price {
   font-size: 20px;
   font-weight: 700;
-  color: #2e7d32;
+  color: #155e63;
 }
 
 .quantity {
@@ -231,11 +231,11 @@
 
 .contact-btn {
   background: #f5f7fa;
-  color: #2e7d32;
+  color: #155e63;
 }
 
 .contact-btn:hover {
-  background: #e8f5e9;
+  background: #eef2ff;
 }
 
 .buy-btn {
@@ -351,12 +351,12 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #2e7d32;
-  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+  border-color: #155e63;
+  box-shadow: 0 0 0 3px rgba(21, 94, 99, 0.08);
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+  background: linear-gradient(135deg, #155e63 0%, #0ea5a4 100%);
   color: white;
   border: none;
   padding: 14px 24px;
@@ -369,7 +369,7 @@
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+  box-shadow: 0 6px 20px rgba(21, 94, 99, 0.2);
 }
 
 .error-box {
@@ -429,8 +429,8 @@
 }
 
 .status-delivered {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: #eef2ff;
+  color: #155e63;
 }
 
 .order-details {

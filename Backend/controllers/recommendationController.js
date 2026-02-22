@@ -119,3 +119,49 @@ exports.recommendCrop = async (req, res) => {
     });
   }
 };
+
+// ===============================
+// Get Weather for a city/district
+// Query param: city or district
+// ===============================
+exports.getWeather = async (req, res) => {
+  try {
+    const city = req.query.city || req.query.district || req.query.q;
+    if (!city) {
+      return res.status(400).json({ message: 'City/district is required' });
+    }
+
+    const weatherResponse = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
+      params: {
+        q: city,
+        appid: process.env.WEATHER_API_KEY,
+        units: 'metric',
+      },
+    });
+
+    const data = weatherResponse.data;
+
+    const weather = {
+      city: data.name,
+      country: data.sys?.country,
+      temperature: data.main?.temp,
+      feels_like: data.main?.feels_like,
+      humidity: data.main?.humidity,
+      pressure: data.main?.pressure,
+      wind: {
+        speed: data.wind?.speed,
+        deg: data.wind?.deg,
+      },
+      precipitation:
+        data.rain?.['1h'] || data.rain?.['3h'] || data.snow?.['1h'] || data.snow?.['3h'] || 0,
+      sunrise: data.sys?.sunrise ? new Date(data.sys.sunrise * 1000).toISOString() : null,
+      sunset: data.sys?.sunset ? new Date(data.sys.sunset * 1000).toISOString() : null,
+      description: data.weather?.[0]?.description,
+    };
+
+    res.json({ weather });
+  } catch (error) {
+    console.error('Weather fetch error:', error.message);
+    res.status(500).json({ message: 'Failed to fetch weather' });
+  }
+};

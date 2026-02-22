@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import {
@@ -15,28 +15,48 @@ import './Dashboard.css';
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [weather, setWeather] = useState(null);
+  const [weatherError, setWeatherError] = useState('');
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        setWeatherError('');
+        const city =
+          user?.location?.city || user?.district || user?.location?.district || '';
+        if (!city) return;
+
+        // lazy-import api to avoid circular issues
+        const api = (await import('../../services/api')).default;
+        const resp = await api.get('/recommendation/weather', { params: { city } });
+        setWeather(resp.data.weather);
+      } catch (err) {
+        console.error('Failed to fetch weather', err.message || err);
+        setWeatherError('Unable to load weather');
+      }
+    };
+
+    fetchWeather();
+  }, [user]);
 
   const summaryData = [
     {
-      title: 'Current Market Value',
-      value: '₹3,450/q',
-      change: '+12%',
-      icon: <TrendingUp size={28} />,
-      color: '#2e7d32',
-    },
-    {
-      title: 'Recommended Crop',
-      value: 'Rice',
-      change: '85% match',
-      icon: <Wheat size={28} />,
-      color: '#f57c00',
-    },
-    {
-      title: 'Weather Forecast',
-      value: '28°C',
-      change: 'Partly Cloudy',
+      title: 'Weather Details',
+      value: weather ? `${weather.city}${weather.country ? ', ' + weather.country : ''}` : (user?.location ? `${user.location.city}, ${user.location.state}` : 'Your Location'),
       icon: <Cloud size={28} />,
-      color: '#1976d2',
+      color: '#155e63',
+      details: weather
+        ? {
+            temperature: `${Math.round(weather.temperature)}°C`,
+            feels_like: `${Math.round(weather.feels_like)}°C`,
+            humidity: `${weather.humidity}%`,
+            wind: weather.wind ? `${weather.wind.speed} m/s` : 'N/A',
+            precipitation: weather.precipitation !== undefined ? `${weather.precipitation}` : '0',
+            sunrise: weather.sunrise ? new Date(weather.sunrise).toLocaleTimeString() : null,
+            sunset: weather.sunset ? new Date(weather.sunset).toLocaleTimeString() : null,
+            description: weather.description || '',
+          }
+        : null,
     },
   ];
 
@@ -45,7 +65,7 @@ const Dashboard = () => {
       title: 'Crop Price Prediction',
       description: 'Get AI-powered price predictions for your crops',
       icon: <LineChart size={40} />,
-      gradient: 'linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%)',
+      gradient: 'linear-gradient(135deg, #155e63 0%, #60a5fa 100%)',
       path: '/price-prediction',
     },
     {
@@ -94,9 +114,16 @@ const Dashboard = () => {
               <div className="summary-content">
                 <p className="summary-title">{item.title}</p>
                 <h3 className="summary-value">{item.value}</h3>
-                <span className="summary-change" style={{ color: item.color }}>
-                  {item.change}
-                </span>
+                {item.details && (
+                  <div className="weather-details">
+                    <p>Temperature: {item.details.temperature}</p>
+                    <p>Feels like: {item.details.feels_like}</p>
+                    <p>Humidity: {item.details.humidity}</p>
+                    <p>Wind: {item.details.wind}</p>
+                    <p>Precipitation: {item.details.precipitation}</p>
+                    <p>Sunrise: {item.details.sunrise} • Sunset: {item.details.sunset}</p>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -121,36 +148,7 @@ const Dashboard = () => {
           ))}
         </div>
 
-        <div className="activities-section">
-          <h2>Recent Market Activities</h2>
-          <div className="activities-table-container">
-            <table className="activities-table">
-              <thead>
-                <tr>
-                  <th>Crop</th>
-                  <th>Price (per quintal)</th>
-                  <th>Date</th>
-                  <th>Trend</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentActivities.map((activity, index) => (
-                  <tr key={index}>
-                    <td className="crop-name">{activity.crop}</td>
-                    <td className="price">{activity.price}</td>
-                    <td>{activity.date}</td>
-                    <td>
-                      <span className={`trend trend-${activity.trend}`}>
-                        {activity.trend === 'up' ? '↑' : '↓'}{' '}
-                        {activity.trend === 'up' ? 'Rising' : 'Falling'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {/* recent market activities removed — replaced by expanded weather details above */}
       </div>
     </div>
   );

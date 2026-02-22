@@ -5,4 +5,8 @@ export const priceService = {
     const response = await api.post('/price/predict', { crop });
     return response.data;
   },
+  getMarketPrices: async (filters) => {
+    const response = await api.get('/price/market', { params: filters });
+    return response.data;
+  },
 };

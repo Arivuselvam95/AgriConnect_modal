@@ -65,12 +65,12 @@
 
 .search-input-wrapper input:focus {
   outline: none;
-  border-color: #2e7d32;
-  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+  border-color: #155e63;
+  box-shadow: 0 0 0 3px rgba(21, 94, 99, 0.08);
 }
 
 .search-btn {
-  background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+  background: linear-gradient(135deg, #155e63 0%, #0ea5a4 100%);
   color: white;
   border: none;
   padding: 14px 28px;
@@ -154,7 +154,7 @@
 }
 
 .prediction-header-card {
-  background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+  background: linear-gradient(135deg, #155e63 0%, #0ea5a4 100%);
   border-radius: 12px;
   padding: 32px;
   box-shadow: 0 4px 16px rgba(46, 125, 50, 0.2);
@@ -257,12 +257,12 @@
 }
 
 .predicted-row {
-  background: #e8f5e9;
+  background: #eef2ff;
   font-weight: 600;
 }
 
 .predicted-value {
-  color: #2e7d32;
+  color: #155e63;
   font-weight: 700;
   font-size: 16px;
 }
@@ -281,4 +281,88 @@
   .crop-cards {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
+}
+
+.filter-btn {
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.filter-btn.active {
+  background: #155e63;
+  color: white;
+  border-color: #155e63;
+}
+
+
+/* Top-level page tabs (Prediction / Market) - scoped to price page */
+.price-prediction-page .page-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.price-prediction-page .page-tabs .tab {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.price-prediction-page .page-tabs .tab.active {
+  background: #155e63;
+  color: white;
+  border-color: #155e63;
+}
+
+/* Filter buttons (range) */
+.filter-btn {
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.filter-btn.active {
+  background: #155e63;
+  color: white;
+  border-color: #155e63;
+}
+
+/* Inner small tabs inside chart-section should be smaller and slightly different style */
+.chart-section .tab {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.chart-section .tab.active {
+  background: #155e63;
+  color: white;
+  border-color: #155e63;
+  margin-bottom: 6px;
+}
+
+.market-form input {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.market-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.market-table th, .market-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
 }

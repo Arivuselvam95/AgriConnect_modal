@@ -10,6 +10,7 @@ const {
   createProduct,
   getAllProducts,
   getMyProducts
+  , updateProduct
 } = require("../controllers/productController");
 
 // Create product (Farmer only)
@@ -20,5 +21,8 @@ router.get("/", getAllProducts);
 
 // Get logged-in farmer products
 router.get("/my", authMiddleware, getMyProducts);
+
+// Update product (Farmer only)
+router.put("/:id", authMiddleware, updateProduct);
 
 module.exports = router;

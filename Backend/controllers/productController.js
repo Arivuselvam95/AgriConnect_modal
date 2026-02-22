@@ -66,3 +66,35 @@ exports.getMyProducts = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// ===============================
+// Update Product (Farmer)
+// ===============================
+exports.updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, price, quantity, description, image } = req.body;
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // ensure the logged in user is the owner
+    if (product.farmer.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to update this product' });
+    }
+
+    if (name !== undefined) product.name = name;
+    if (price !== undefined) product.price = price;
+    if (quantity !== undefined) product.quantity = quantity;
+    if (description !== undefined) product.description = description;
+    if (image !== undefined) product.image = image;
+
+    await product.save();
+
+    res.json({ message: 'Product updated successfully', product });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

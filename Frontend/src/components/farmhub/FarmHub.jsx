@@ -30,6 +30,8 @@ const FarmHub = () => {
     description: '',
     image: '',
   });
+  const [showEditProduct, setShowEditProduct] = useState(false);
+  const [editProduct, setEditProduct] = useState(null);
 
   useEffect(() => {
     if (activeTab === 'marketplace') {
@@ -113,6 +115,39 @@ const FarmHub = () => {
       fetchProducts();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to place order');
+    }
+  };
+
+  const handleEditClick = (product) => {
+    setEditProduct({
+      id: product._id,
+      name: product.name || '',
+      price: product.price || '',
+      quantity: product.quantity || 0,
+      description: product.description || '',
+      image: product.image || '',
+    });
+    setShowEditProduct(true);
+  };
+
+  const handleUpdateProduct = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    try {
+      await productService.updateProduct(editProduct.id, {
+        name: editProduct.name,
+        price: parseFloat(editProduct.price),
+        quantity: parseInt(editProduct.quantity),
+        description: editProduct.description,
+        image: editProduct.image,
+      });
+      setSuccess('Product updated successfully!');
+      setShowEditProduct(false);
+      setEditProduct(null);
+      fetchMyProducts();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update product');
     }
   };
 
@@ -316,6 +351,87 @@ const FarmHub = () => {
               </div>
             )}
 
+            {showEditProduct && editProduct && (
+              <div className="modal-overlay" onClick={() => setShowEditProduct(false)}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                  <div className="modal-header">
+                    <h2>Edit Product</h2>
+                    <button
+                      className="close-btn"
+                      onClick={() => setShowEditProduct(false)}
+                    >
+                      <X size={24} />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleUpdateProduct} className="product-form">
+                    {error && <div className="error-box">{error}</div>}
+
+                    <div className="form-group">
+                      <label htmlFor="edit-name">Product Name</label>
+                      <input
+                        type="text"
+                        id="edit-name"
+                        value={editProduct.name}
+                        onChange={(e) => setEditProduct({ ...editProduct, name: e.target.value })}
+                        required
+                      />
+                    </div>
+
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="edit-price">Price (₹)</label>
+                        <input
+                          type="number"
+                          id="edit-price"
+                          value={editProduct.price}
+                          onChange={(e) => setEditProduct({ ...editProduct, price: e.target.value })}
+                          required
+                          step="0.01"
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="edit-quantity">Remaining Stock</label>
+                        <input
+                          type="number"
+                          id="edit-quantity"
+                          value={editProduct.quantity}
+                          onChange={(e) => setEditProduct({ ...editProduct, quantity: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="edit-description">Description</label>
+                      <textarea
+                        id="edit-description"
+                        value={editProduct.description}
+                        onChange={(e) => setEditProduct({ ...editProduct, description: e.target.value })}
+                        rows="3"
+                      ></textarea>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="edit-image">Image URL (optional)</label>
+                      <input
+                        type="url"
+                        id="edit-image"
+                        value={editProduct.image}
+                        onChange={(e) => setEditProduct({ ...editProduct, image: e.target.value })}
+                        placeholder="https://example.com/image.jpg"
+                      />
+                    </div>
+
+                    <button type="submit" className="submit-btn">
+                      Update Product
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+
             <div className="products-grid">
               {loading ? (
                 <p>Loading your products...</p>
@@ -341,6 +457,14 @@ const FarmHub = () => {
                       <div className="product-meta">
                         <span className="price">₹{product.price}/unit</span>
                         <span className="quantity">Stock: {product.quantity}</span>
+                      </div>
+                      <div className="product-actions">
+                        <button
+                          className="contact-btn"
+                          onClick={() => handleEditClick(product)}
+                        >
+                          Edit
+                        </button>
                       </div>
                     </div>
                   </div>

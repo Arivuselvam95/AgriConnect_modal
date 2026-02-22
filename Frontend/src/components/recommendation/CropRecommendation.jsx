@@ -224,7 +224,7 @@ const CropRecommendation = () => {
                       </div>
                     </div>
                     <div className="weather-item">
-                      <Cloud size={32} color="#2e7d32" />
+                      <Cloud size={32} color="#155e63" />
                       <div>
                         <p className="label">Rainfall</p>
                         <p className="value">{result.weather.rainfall} mm</p>
@@ -274,7 +274,7 @@ const CropRecommendation = () => {
               {allCrops.map((crop, index) => (
                 <div key={index} className="crop-info-card">
                   <div className="crop-info-header">
-                    <Leaf size={24} color="#2e7d32" />
+                    <Leaf size={24} color="#155e63" />
                     <h4>{crop.crop}</h4>
                   </div>
                   <div className="crop-info-body">
