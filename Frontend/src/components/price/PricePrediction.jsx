@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { priceService } from '../../services/price.service';
 import { Line } from 'react-chartjs-2';
 import {
@@ -40,6 +40,10 @@ const PricePrediction = () => {
   });
   const [marketLoading, setMarketLoading] = useState(false);
   const [marketData, setMarketData] = useState(null);
+
+  // yesterday prices states
+  const [yesterdayLoading, setYesterdayLoading] = useState(false);
+  const [yesterdayData, setYesterdayData] = useState(null);
 
   const defaultCrops = [
     { name: 'Wheat', icon: '🌾' },
@@ -88,6 +92,7 @@ const PricePrediction = () => {
     setLoading(true);
     setError('');
     setPredictionData(null);
+    setYesterdayData(null);
 
     try {
       const data = await priceService.predictPrice(crop);
@@ -96,6 +101,21 @@ const PricePrediction = () => {
       setError(err.response?.data?.detail || 'Failed to predict price. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchYesterdayPrices = async (crop) => {
+    if (!crop) return;
+    setYesterdayLoading(true);
+    setError('');
+    setYesterdayData(null);
+    try {
+      const data = await priceService.getYesterdayPrices(crop);
+      setYesterdayData(data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch yesterday prices');
+    } finally {
+      setYesterdayLoading(false);
     }
   };
 
@@ -164,6 +184,13 @@ const PricePrediction = () => {
       },
     },
   };
+
+  // effect: fetch yesterday prices when tab switches and crop available
+  useEffect(() => {
+    if (activeTab === 'yesterday' && predictionData) {
+      fetchYesterdayPrices(predictionData.crop);
+    }
+  }, [activeTab, predictionData]);
 
   return (
     <div className="price-prediction-page">
@@ -255,17 +282,34 @@ const PricePrediction = () => {
                     <Line data={getChartData()} options={chartOptions} />
                   ) : (
                     <div className="yesterday-table">
-                      <table>
-                        <thead>
-                          <tr><th>Market</th><th>Crop</th><th>Price</th><th>Date</th></tr>
-                        </thead>
-                        <tbody>
-                          {/* dummy yesterday data */}
-                          <tr><td>Central Market</td><td>{predictionData.crop}</td><td>₹{(predictionData.predicted_price - 50).toFixed(0)}</td><td>{new Date(Date.now()-24*3600*1000).toLocaleDateString()}</td></tr>
-                          <tr><td>East Market</td><td>{predictionData.crop}</td><td>₹{(predictionData.predicted_price - 20).toFixed(0)}</td><td>{new Date(Date.now()-24*3600*1000).toLocaleDateString()}</td></tr>
-                          <tr><td>West Market</td><td>{predictionData.crop}</td><td>₹{(predictionData.predicted_price + 10).toFixed(0)}</td><td>{new Date(Date.now()-24*3600*1000).toLocaleDateString()}</td></tr>
-                        </tbody>
-                      </table>
+                      {yesterdayLoading && <p>Loading yesterday prices...</p>}
+                      {yesterdayData && yesterdayData.records && yesterdayData.records.length === 0 && (
+                        <p>No records found for yesterday.</p>
+                      )}
+                      {yesterdayData && yesterdayData.records && yesterdayData.records.length > 0 && (
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Date</th>
+                              <th>Market</th>
+                              <th>Commodity</th>
+                              <th>Min Price</th>
+                              <th>Max Price</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {yesterdayData.records.map((rec, idx) => (
+                              <tr key={idx}>
+                                <td>{rec.Arrival_Date}</td>
+                                <td>{rec.Market}</td>
+                                <td>{rec.Commodity}</td>
+                                <td>₹{rec.Min_Price || '-'}</td>
+                                <td>₹{rec.Max_Price || '-'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
                     </div>
                   )}
                 </div>
