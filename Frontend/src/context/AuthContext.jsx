@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
 import { authService } from '../services/auth.service';
+import { setLogoutCallback } from '../services/api';
 
 export const AuthContext = createContext();
 
@@ -11,6 +12,11 @@ export const AuthProvider = ({ children }) => {
     const currentUser = authService.getCurrentUser();
     setUser(currentUser);
     setLoading(false);
+
+    // Register logout callback for 401 responses
+    setLogoutCallback(() => {
+      setUser(null);
+    });
   }, []);
 
   const login = async (credentials) => {

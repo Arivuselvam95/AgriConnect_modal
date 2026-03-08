@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { priceService } from '../../services/price.service';
+import { AuthContext } from '../../context/AuthContext';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -25,11 +26,12 @@ ChartJS.register(
 );
 
 const PricePrediction = () => {
+  const { logout } = useContext(AuthContext);
   const [cropName, setCropName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [predictionData, setPredictionData] = useState(null);
-  const [activeTab, setActiveTab] = useState('trend'); // 'trend' or 'yesterday'
+  const [activeTab, setActiveTab] = useState('trend'); // 'trend' or 'lastweek'
   const [rangeMonths, setRangeMonths] = useState(12); // 3,6,12
   const [activePanel, setActivePanel] = useState('prediction'); // 'prediction' or 'market'
   const [marketFilters, setMarketFilters] = useState({
@@ -41,16 +43,16 @@ const PricePrediction = () => {
   const [marketLoading, setMarketLoading] = useState(false);
   const [marketData, setMarketData] = useState(null);
 
-  // yesterday prices states
-  const [yesterdayLoading, setYesterdayLoading] = useState(false);
-  const [yesterdayData, setYesterdayData] = useState(null);
+  // last week prices states
+  const [lastWeekLoading, setLastWeekLoading] = useState(false);
+  const [lastWeekData, setLastWeekData] = useState(null);
 
   const defaultCrops = [
-    { name: 'Wheat', icon: '🌾' },
+    { name: 'Cabbage', icon: '🥬' },
     { name: 'Paddy', icon: '🌾' },
     { name: 'Maize', icon: '🌽' },
     { name: 'Cotton', icon: '🌸' },
-    { name: 'Sugarcane', icon: '🎋' },
+    { name: 'Beans', icon: '🫛' },
   ];
 
   const handleCropSelect = async (crop) => {
@@ -82,6 +84,10 @@ const PricePrediction = () => {
       const data = await priceService.getMarketPrices(params);
       setMarketData(data);
     } catch (err) {
+      if (err.response?.status === 401) {
+        logout();
+        window.location.href = '/login';
+      }
       setError(err.response?.data?.message || 'Failed to fetch market prices');
     } finally {
       setMarketLoading(false);
@@ -92,30 +98,42 @@ const PricePrediction = () => {
     setLoading(true);
     setError('');
     setPredictionData(null);
-    setYesterdayData(null);
+    setLastWeekData(null);
 
     try {
       const data = await priceService.predictPrice(crop);
       setPredictionData(data);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to predict price. Please try again.');
+      if (err.response?.status === 401) {
+        logout();
+        window.location.href = '/login';
+      }
+      setError(err.response?.data?.detail || 'Failed to predict price due to Invalid Crop Name or Service Unavailable.');
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchYesterdayPrices = async (crop) => {
+  const fetchLastWeekPrices = async (crop) => {
     if (!crop) return;
-    setYesterdayLoading(true);
+    setLastWeekLoading(true);
     setError('');
-    setYesterdayData(null);
+    setLastWeekData(null);
     try {
-      const data = await priceService.getYesterdayPrices(crop);
-      setYesterdayData(data);
+      const data = await priceService.getLastWeekPrices(
+        crop, 
+        marketFilters.State, 
+        marketFilters.District
+      );
+      setLastWeekData(data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch yesterday prices');
+      if (err.response?.status === 401) {
+        logout();
+        window.location.href = '/login';
+      }
+      setError(err.response?.data?.message || 'Failed to fetch last week prices');
     } finally {
-      setYesterdayLoading(false);
+      setLastWeekLoading(false);
     }
   };
 
@@ -185,10 +203,10 @@ const PricePrediction = () => {
     },
   };
 
-  // effect: fetch yesterday prices when tab switches and crop available
+  // effect: fetch last week prices when tab switches and crop available
   useEffect(() => {
-    if (activeTab === 'yesterday' && predictionData) {
-      fetchYesterdayPrices(predictionData.crop);
+    if (activeTab === 'lastweek' && predictionData) {
+      fetchLastWeekPrices(predictionData.crop);
     }
   }, [activeTab, predictionData]);
 
@@ -274,19 +292,19 @@ const PricePrediction = () => {
 
                 <div style={{display:'flex', gap:12, marginBottom:12}}>
                   <button className={`tab ${activeTab==='trend'?'active':''}`} onClick={() => setActiveTab('trend')}>Trend</button>
-                  <button className={`tab ${activeTab==='yesterday'?'active':''}`} onClick={() => setActiveTab('yesterday')}>Yesterday Prices</button>
+                  <button className={`tab ${activeTab==='lastweek'?'active':''}`} onClick={() => setActiveTab('lastweek')}>Last Week Prices</button>
                 </div>
 
                 <div className="chart-container">
                   {activeTab === 'trend' ? (
                     <Line data={getChartData()} options={chartOptions} />
                   ) : (
-                    <div className="yesterday-table">
-                      {yesterdayLoading && <p>Loading yesterday prices...</p>}
-                      {yesterdayData && yesterdayData.records && yesterdayData.records.length === 0 && (
-                        <p>No records found for yesterday.</p>
+                    <div className="lastweek-table">
+                      {lastWeekLoading && <p>Loading last week prices...</p>}
+                      {lastWeekData && lastWeekData.records && lastWeekData.records.length === 0 && (
+                        <p>No records found for last week.</p>
                       )}
-                      {yesterdayData && yesterdayData.records && yesterdayData.records.length > 0 && (
+                      {lastWeekData && lastWeekData.records && lastWeekData.records.length > 0 && (
                         <table>
                           <thead>
                             <tr>
@@ -298,7 +316,7 @@ const PricePrediction = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {yesterdayData.records.map((rec, idx) => (
+                            {lastWeekData.records.map((rec, idx) => (
                               <tr key={idx}>
                                 <td>{rec.Arrival_Date}</td>
                                 <td>{rec.Market}</td>
