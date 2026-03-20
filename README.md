@@ -64,8 +64,8 @@ AgriConnect/
 
 ### 🔹 1. Clone Repository
 ```bash
-git clone https://github.com/your-username/agriconnect.git
-cd agriconnect
+git clone https://github.com/Arivuselvam95/AgriConnect.git
+cd AgriConnect
 ````
 
 ---
