@@ -1,10 +1,4 @@
-Here’s a clean and professional **README.md** for your **AgriConnect project** 👇
 
----
-
-## 📄 README.md
-
-```markdown
 # 🌾 AgriConnect
 
 AgriConnect is an intelligent agriculture platform that helps farmers and stakeholders with:
@@ -198,14 +192,4 @@ POST /predict/crop
 
 ---
 
-## 👨‍💻 Author
-
-**Arivuselvam S**
-Full Stack Developer | ML Enthusiast
-
----
-
-## 📜 License
-
-This project is for academic and research purposes.
 
