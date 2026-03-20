@@ -39,3 +39,106 @@ AgriConnect is an intelligent agriculture platform that helps farmers and stakeh
 ---
 
 ## 🏗️ Project Structure
+AgriConnect/
+│
+├── Frontend/ # React App
+├── Backend/ # Node.js API
+├── MyModal/ # Machine Learning Models
+│ ├── app/ # FastAPI routes
+│ ├── data/raw/ # Crop datasets
+│ ├── src/ # ML pipeline
+│ ├── models/ # Trained models
+│ └── requirements.txt
+│
+└── run_agriconnect.bat # Run all services
+
+
+---
+
+## ⚙️ Installation
+
+### 🔹 1. Clone Repository
+git clone https://github.com/your-username/agriconnect.git
+cd agriconnect
+🔹 2. Setup Backend
+cd Backend
+npm install
+npm start
+🔹 3. Setup Frontend
+cd Frontend
+npm install
+npm run dev
+🔹 4. Setup ML Model (FastAPI)
+cd MyModal
+
+# Create virtual environment
+python -m venv venv
+
+# Activate
+venv\Scripts\activate   # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run server
+uvicorn app.main:app --reload
+▶️ Run Entire Project
+
+You can directly run:
+
+run_agriconnect.bat
+📡 API Endpoints
+🔹 Price Prediction
+GET /predict/{crop}
+
+Example:
+
+/predict/turmeric
+🔹 Crop Recommendation
+POST /predict/crop
+
+Request Body:
+
+{
+  "Nitrogen": 90,
+  "Phosphorus": 40,
+  "Potassium": 40,
+  "Temperature": 25,
+  "Humidity": 70,
+  "pH_Value": 6.5,
+  "Rainfall": 200
+}
+🧠 ML Models Used
+Task	Model
+Price Prediction	LSTM
+Feature Selection	Random Forest
+Crop Recommendation	Classification Model
+📊 Features Used in Price Prediction
+
+Rainfall
+
+WPI (Wholesale Price Index)
+
+Month (sin & cos encoding)
+
+Lag Features:
+
+Price_lag_1
+
+Price_lag_2
+
+Price_lag_3
+
+Rolling Mean
+
+🔮 Future Enhancements
+
+Multi-month price prediction (3–6 months)
+
+Weather API integration
+
+Farmer dashboard with analytics
+
+Mobile app support
+
+Real-time market data
