@@ -40,17 +40,17 @@ AgriConnect is an intelligent agriculture platform that helps farmers and stakeh
 
 ## 🏗️ Project Structure
 AgriConnect/
-│
-├── Frontend/ # React App
-├── Backend/ # Node.js API
-├── MyModal/ # Machine Learning Models
-│ ├── app/ # FastAPI routes
-│ ├── data/raw/ # Crop datasets
-│ ├── src/ # ML pipeline
-│ ├── models/ # Trained models
-│ └── requirements.txt
-│
-└── run_agriconnect.bat # Run all services
+   │
+   ├── Frontend/ # React App
+   ├── Backend/ # Node.js API
+   ├── MyModal/ # Machine Learning Models
+   │ ├── app/ # FastAPI routes
+   │ ├── data/raw/ # Crop datasets
+   │ ├── src/ # ML pipeline
+   │ ├── models/ # Trained models
+   │ └── requirements.txt
+   │
+   └── run_agriconnect.bat # Run all services
 
 
 ---
