@@ -12,7 +12,9 @@ app = FastAPI(
     version="2.0"
 )
 
-
+@app.get("/")
+def loading():
+    return {'AgriConnectModal': 'Started'}
 @app.get("/predict/{crop}")
 def predict_price(crop: str):
 

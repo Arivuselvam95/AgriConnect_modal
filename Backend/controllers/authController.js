@@ -76,3 +76,31 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// ===============================
+// Update Profile
+// ===============================
+exports.updateProfile = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { name, state, district } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { name, state, district },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    res.json({ message: 'Profile updated successfully.', user: updatedUser });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

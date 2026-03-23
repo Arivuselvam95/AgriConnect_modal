@@ -35,11 +35,21 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateProfile = async (profileData) => {
+    const data = await authService.updateProfile(profileData);
+    if (data?.user) {
+      setUser(data.user);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
+    return data;
+  };
+
   const value = {
     user,
     login,
     register,
     logout,
+    updateProfile,
     isAuthenticated: !!user,
     loading,
   };

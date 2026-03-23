@@ -244,7 +244,7 @@ const PricePrediction = () => {
 
         {/* search moved into Prediction panel so it only shows when activePanel === 'prediction' */}
 
-        <div className="page-tabs" style={{marginBottom: 20}}>
+        <div className="tabs" style={{marginBottom: 20}}>
           <button className={`tab ${activePanel === 'prediction' ? 'active' : ''}`} onClick={() => setActivePanel('prediction')}>Price Prediction</button>
           <button className={`tab ${activePanel === 'market' ? 'active' : ''}`} onClick={() => setActivePanel('market')}>Market Prices</button>
         </div>
@@ -463,7 +463,7 @@ const PricePrediction = () => {
                           <tr><th>Date</th><th>Market</th><th>Commodity</th><th>Variety</th><th>Min Price</th><th>Max Price</th></tr>
                         </thead>
                         <tbody>
-                          {marketData.records.map((rec, idx) => (
+                          {marketData.records.sort((x ,y)=> y.Arrival_Date - x.Arrival_Date).map((rec, idx) => (
                             <tr key={idx}>
                               <td>{rec.Arrival_Date}</td>
                               <td>{rec.Market}</td>

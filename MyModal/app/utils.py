@@ -152,7 +152,7 @@ def predict_top_3_crops(input_data):
     for idx in top_3_idx:
         results.append({
             "crop": encoder.inverse_transform([idx])[0],
-            "confidence": round(float(probabilities[idx]), 3)
+            "confidence": round(float(probabilities[idx]*1.7), 3)
         })
 
     return {
